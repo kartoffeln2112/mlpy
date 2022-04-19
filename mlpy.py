@@ -157,8 +157,8 @@ print("R2: ", metrics.r2_score(testY, predmimwmLR))
 print("MSE: ", mse)
 
 
-with open('model.pkl', 'wb') as mmax_model_file:
+with open('mmax_model.pkl', 'wb') as mmax_model_file:
     pickle.dump(mimmLogR, mmax_model_file)
 
-with open('model.pkl', 'wb') as m_model_file:
+with open('m_model.pkl', 'wb') as m_model_file:
     pickle.dump(mimwmLogR, m_model_file)

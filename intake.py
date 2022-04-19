@@ -49,10 +49,10 @@ mqttClient.configureEndpoint(endpoint, 8883)
 mqttClient.configureCredentials(rootCAFile, privCertFile, certFile)
 
 # read in models
-with open("model.pkl", 'rb') as mmax_model_file:
+with open("mmax_model.pkl", 'rb') as mmax_model_file:
     mmax_model = pickle.load(mmax_model_file)
 
-with open("model.pkl", 'rb') as m_model_file:
+with open("m_model.pkl", 'rb') as m_model_file:
     m_model = pickle.load(m_model_file)
 
 mqttClient.connect()

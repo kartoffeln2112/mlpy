@@ -125,24 +125,8 @@ plt.show()
 # sns.heatmap(miiCorrMatrix.loc[:, ["Mmax", "Growth", "Growth.1", "M", "M.1"]], annot=True)
 # plt.show()
 
-# MMAX MODEL
-X1 = moldi.loc[1:, ["Temp", "RH", "RHdiff"]]
-y = moldi.loc[1:, "Mmax"]
-trainX, testX, trainY, testY = train_test_split(X1, y, test_size=0.2, random_state=1234)
-
-mimmLogR = LinearRegression().fit(trainX, trainY)
-predmimmLR = mimmLogR.predict(testX)
-mse = np.mean((predmimmLR - testY)**2)
-print("Intercept: ", mimmLogR.intercept_)
-print("Coefs: ", mimmLogR.coef_)
-print("Score: ", mimmLogR.score(trainX, trainY))
-print("R2: ", metrics.r2_score(testY, predmimmLR))
-print("MSE: ", mse)
-
 # M.growth MODEL
-XwM = moldi.loc[1:, ["Growth", "Recession"]]
-predXmimmLR = mimmLogR.predict(X1)
-XwM["Mmax"] = predXmimmLR
+XwM = moldi.loc[1:, ["Temp", "RH", "RHdiff", "Growth", "Recession"]]
 
 y = moldi.loc[1:, "M"]
 trainX, testX, trainY, testY = train_test_split(XwM, y, test_size=0.2, random_state=1234)
@@ -155,10 +139,6 @@ print("Coefs: ", mimwmLogR.coef_)
 print("Score: ", mimwmLogR.score(trainX, trainY))
 print("R2: ", metrics.r2_score(testY, predmimwmLR))
 print("MSE: ", mse)
-
-
-with open('mmax_model.pkl', 'wb') as mmax_model_file:
-    pickle.dump(mimmLogR, mmax_model_file)
 
 with open('m_model.pkl', 'wb') as m_model_file:
     pickle.dump(mimwmLogR, m_model_file)

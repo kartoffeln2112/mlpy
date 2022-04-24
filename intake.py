@@ -6,9 +6,9 @@ import math
 from sklearn.linear_model import LinearRegression
 
 rootCAFile = "AmazonRootCA1.pem"
-certFile = "0154ac910202c2a7bd11d5643037594dd97db3a45c7fa9c57b0764bdd38eed69-certificate.pem.crt.txt"
-privCertFile = "0154ac910202c2a7bd11d5643037594dd97db3a45c7fa9c57b0764bdd38eed69-private.pem.key"
-endpoint = "a3m5m42t28eosr-ats.iot.us-west-2.amazonaws.com"
+certFile = "04936d9a74a104fde368e3d39c59fa69867b42c1b1087822afa6e0e0012a48a7-certificate.pem.crt"
+privCertFile = "04936d9a74a104fde368e3d39c59fa69867b42c1b1087822afa6e0e0012a48a7-private.pem.key"
+endpoint = "a31fy3n3mv508f-ats.iot.us-west-2.amazonaws.com"
 client = "mlpy"
 
 subTopic = "esp32/pub"
@@ -23,21 +23,26 @@ def on_message(client, userdata, message):
 
     # assume category 2 sensitivity for material
     # (drywall, paper-based products & films, planed wood, wood-based panels)
-    mmax = mmax_model.predict([[data["Temperature"], data["Moisture"], (CRIT_RH - data["Moisture"])]])
+    rhdiff = 0
+    if (data["Moisture"] > CRIT_RH):
+        rhdiff = (data["Moisture"] - CRIT_RH)
+
     growth = 0
     if (data["Moisture"] > 50):
         growth = TIME_INTERVAL * 1/(7 * math.exp((-.68 * math.log(data["Temperature"])
                                                   - (13.9 * math.log(data["Moisture"])) + 66.02)))
+
     recession = 0
-    if (data["DryTime"] > 24):
+    if (data["DryTime"] > 6):
         recession = -.016 * TIME_INTERVAL
 
-    predM = m_model.predict([[growth, recession, mmax[0]]])
+    predM = m_model.predict([[data["Temperature"], data["Moisture"], rhdiff, growth, recession]])
     pubData = {
         "Time": data["Time"],
         "Room": data["Room"],
         "Temperature": data["Temperature"],
-        "Humidity": data["Moisture"],
+        "Humidity": data["Humidity"],
+        "Moisture": data["Moisture"],
         "Prediction": predM[0]
     }
     mqttClient.publish(pubTopic, json.dumps(pubData), 0)
@@ -49,9 +54,6 @@ mqttClient.configureEndpoint(endpoint, 8883)
 mqttClient.configureCredentials(rootCAFile, privCertFile, certFile)
 
 # read in models
-with open("mmax_model.pkl", 'rb') as mmax_model_file:
-    mmax_model = pickle.load(mmax_model_file)
-
 with open("m_model.pkl", 'rb') as m_model_file:
     m_model = pickle.load(m_model_file)
 

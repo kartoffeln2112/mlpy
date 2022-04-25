@@ -126,7 +126,7 @@ plt.show()
 # plt.show()
 
 # M.growth MODEL
-XwM = moldi.loc[1:, ["Temp", "RH", "RHdiff", "Growth", "Recession"]]
+XwM = moldi.loc[1:, ["Temp", "RHdiff", "Growth", "Recession"]]
 
 y = moldi.loc[1:, "M"]
 trainX, testX, trainY, testY = train_test_split(XwM, y, test_size=0.2, random_state=1234)

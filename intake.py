@@ -36,7 +36,7 @@ def on_message(client, userdata, message):
     if (data["DryTime"] > 6):
         recession = -.016 * TIME_INTERVAL
 
-    predM = m_model.predict([[data["Temperature"], data["Moisture"], rhdiff, growth, recession]])
+    predM = m_model.predict([[data["Temperature"], rhdiff, growth, recession]])
     pubData = {
         "Time": data["Time"],
         "Room": data["Room"],
